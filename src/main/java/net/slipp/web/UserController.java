@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import net.slipp.domain.User;
 import net.slipp.domain.UserRepository;
 
@@ -37,6 +35,24 @@ public class UserController {
         final List<User> users = userRepository.findAll();
         model.addAttribute("users", users);
         return "/user/list";
+    }
+
+    @GetMapping("/{id}/form")
+    public String updateForm(@PathVariable long id, Model model) {
+        model.addAttribute("user", userRepository.findOne(id));
+        return "/user/updateForm";
+    }
+
+    @GetMapping("/form")
+    public String form() {
+        return "/user/form";
+    }
+
+    @PutMapping("/{id}")
+    public String update(@PathVariable long id, User target) {
+        User original = userRepository.findOne(id);
+        original.update(target);
+        return "redirect:/users";
     }
 
 }
