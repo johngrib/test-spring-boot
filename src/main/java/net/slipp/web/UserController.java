@@ -51,8 +51,11 @@ public class UserController {
     @PutMapping("/{id}")
     public String update(@PathVariable long id, User target) {
         User original = userRepository.findOne(id);
-        original.update(target);
-        return "redirect:/users";
+
+        if(original.update(target)) {
+            return "redirect:/users";
+        }
+        return "redirect:/";
     }
 
 }

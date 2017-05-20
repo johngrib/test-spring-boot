@@ -83,7 +83,7 @@ public class UserControllerTest {
         final MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 
         params.add("_method", "put");
-        params.add("password", "asdf");
+        params.add("password", testUser.getPassword());
         params.add("name", "변경된 이름");
         params.add("email", "modified@email");
 
@@ -96,6 +96,32 @@ public class UserControllerTest {
 
         assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
         assertThat(response.getHeaders().getLocation().getPath(), is("/users"));
+
+    }
+
+    @Test
+    public void 비밀번호가_다르면_회원정보_수정_불가능() throws Exception {
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        final MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+
+        params.add("_method", "put");
+        params.add("password", testUser.getPassword() + "asdf");
+        params.add("name", "변경된 이름");
+        params.add("email", "modified@email");
+
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(params, headers);
+        ResponseEntity<String> response = template.postForEntity(
+                String.format("/users/%d", testUser.getId()),
+                request,
+                String.class
+        );
+
+        assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
+        assertThat(response.getHeaders().getLocation().getPath(), is("/"));
 
     }
 

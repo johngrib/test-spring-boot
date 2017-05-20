@@ -72,12 +72,13 @@ public class User {
         this.email = email;
     }
 
-    public void update(User target) {
-        if (!matchPassword(password)) {
-            return;
+    public boolean update(User target) {
+        if (!matchPassword(target.getPassword())) {
+            return false;
         }
         this.name = target.name;
         this.email = target.email;
+        return true;
     }
 
     public boolean matchPassword(String password) {
