@@ -1,5 +1,8 @@
 package net.slipp.web;
 
+import net.slipp.domain.User;
+import net.slipp.domain.UserRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -11,9 +14,6 @@ import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import javax.swing.*;
-
 import java.util.Arrays;
 
 import static org.hamcrest.core.Is.is;
@@ -29,6 +29,14 @@ public class UserControllerTest {
     private static final Logger log = LoggerFactory.getLogger(UserControllerTest.class);
 
     @Autowired private TestRestTemplate template;
+    @Autowired private UserRepository userRepository;
+
+    private User testUser;
+
+    @Before
+    public void prepareTestUser() {
+        testUser = userRepository.save(new User("johngrib", "password", "name", "john@grib"));
+    }
 
     @Test
     public void create() throws Exception {
@@ -47,5 +55,13 @@ public class UserControllerTest {
 
         assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
         assertThat(response.getHeaders().getLocation().getPath(), is("/users"));
+    }
+
+    @Test
+    public void 사용자_목록이_출력되어야_한다() throws Exception {
+        final ResponseEntity<String> response = template.getForEntity("/users", String.class);
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().contains(testUser.getEmail()), is(true));
+        assertThat(response.getBody().contains(testUser.getName()), is(true));
     }
 }

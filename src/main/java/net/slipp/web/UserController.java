@@ -4,10 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import net.slipp.domain.User;
 import net.slipp.domain.UserRepository;
+
+import java.util.List;
 
 /**
  * Created by johngrib on 2017. 5. 18..
@@ -26,6 +30,13 @@ public class UserController {
         log.debug("create user : {}", user);
         userRepository.save(user);
         return "redirect:/users";
+    }
+
+    @GetMapping("")
+    public String list(final Model model) {
+        final List<User> users = userRepository.findAll();
+        model.addAttribute("users", users);
+        return "/user/list";
     }
 
 }
